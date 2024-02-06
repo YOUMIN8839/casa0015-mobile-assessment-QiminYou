@@ -1,5 +1,9 @@
 # Discount Manager
 
+#Scratch
+![7b9bbeafb8248375c5607b3feaaf20b](https://github.com/YOUMIN8839/casa0015-mobile-assessment-QiminYou/assets/156082305/def17998-40fe-4daf-8119-367786f0e7e8)
+
+
 This is the Final assessment template for CASA0014 - Please use this template and edit the relevant sections to personalise.
 This section has a short introduction to what the application is
 
