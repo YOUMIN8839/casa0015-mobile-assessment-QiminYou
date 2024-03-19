@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'calendar_screen.dart'; // 假设你已经创建了CalendarScreen
+import 'calendar_screen.dart';
+import 'input_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,6 +10,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: MainScreen(),
+      routes: {
+        '/inputPage': (context) => InputPage(),
+      },
     );
   }
 }
@@ -34,6 +38,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/inputPage');
+        },
+        child: Icon(Icons.add),
+      ),
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
