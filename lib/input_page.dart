@@ -90,7 +90,7 @@ class CameraPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('拍照'),
+        title: Text('OCR'),
       ),
       body: CameraPreview(this.controller), // 显示相机预览
     );
