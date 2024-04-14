@@ -115,7 +115,7 @@ class _InputPageState extends State<InputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('输入详情'),
+        title: Text('输入折扣'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
