@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207316047462",
+    "project_id": "discount-manager-f6248",
+    "storage_bucket": "discount-manager-f6248.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207316047462:android:5deb5e270a9dba08a37fa7",
+        "android_client_info": {
+          "package_name": "com.Youmin.discount_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcVAMnpxspxHjnHnlraXpUfLTUHj_yZ3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

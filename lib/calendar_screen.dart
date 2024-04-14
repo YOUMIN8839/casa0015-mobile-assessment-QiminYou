@@ -32,7 +32,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('日历示例'),
+        title: Text('Discount Calendar'),
       ),
       body: TableCalendar(
         firstDay: DateTime.utc(2010, 10, 16),

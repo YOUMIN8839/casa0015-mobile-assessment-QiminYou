@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: MainScreen(),
       routes: {
-        '/inputPage': (context) => InputPage(),
+        '/choicePage': (context) => ChoicePage(),
       },
     );
   }
@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/inputPage');
+          Navigator.pushNamed(context, '/choicePage');
         },
         child: Icon(Icons.add),
       ),
