@@ -22,6 +22,11 @@ dependencies:
   cloud_firestore: any
   camera: any
   intl: any
+  path_provider: any
+  http: any
+  google_ml_kit: any
+  image_cropper: 4.0.1
+
 
 
   # The following adds the Cupertino Icons font to your application.

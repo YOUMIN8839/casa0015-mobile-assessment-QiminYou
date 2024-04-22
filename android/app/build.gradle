@@ -66,6 +66,15 @@ flutter {
     source '../..'
 }
 
+// fix bugs between firebase and google_ml_kit
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okhttp:okhttp:2.7.5'
+        force 'com.squareup.okio:okio:1.17.5'
+    }
+}
+
+
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.8.1')
     implementation 'com.google.firebase:firebase-analytics'
