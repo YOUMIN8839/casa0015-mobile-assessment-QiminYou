@@ -360,7 +360,7 @@ class _InputPageState extends State<InputPage> {
   late TextEditingController _productNameController = TextEditingController();
   DateTime? _startTime; // 使用 DateTime 来存储日期
   dynamic _endTime = 'Subject to availability';
-  String _selectedQuantity = '余量充足'; // 默认选中的数量
+  String _selectedQuantity = 'Sufficient stock'; // 默认选中的数量
   Color? _color;
   final Map<String, Color> _colorOptions = {
     'Red': Colors.red,
@@ -406,7 +406,7 @@ class _InputPageState extends State<InputPage> {
     '8',
     '9',
     '10',
-    '余量充足'
+    'Sufficient stock'
   ];
   final String subjectToAvailability = 'Subject to availability';
 
@@ -430,17 +430,17 @@ class _InputPageState extends State<InputPage> {
     if (_nameController.text.isEmpty ||
         _descriptionController.text.isEmpty ||
         _selectedQuantity == '0') {
-      String missingInput = '所有字段';
+      String missingInput = 'All fields';
       if (_nameController.text.isEmpty) {
-        missingInput = '商家名称';
+        missingInput = 'Merchant Name';
       } else if (_descriptionController.text.isEmpty) {
-        missingInput = '折扣描述';
+        missingInput = 'Discount Description';
       } else if (_selectedQuantity == '0') {
-        missingInput = '剩余个数';
+        missingInput = 'Availability';
       } else if (_productNameController.text.isEmpty) {
-        missingInput = '商品名称';
+        missingInput = 'Product Name';
       } else if (_color == null) {
-        missingInput = '颜色';
+        missingInput = 'Color';
       }
       _showInputAlert(missingInput);
       return;
@@ -501,14 +501,14 @@ class _InputPageState extends State<InputPage> {
             TextButton(
               child: Text('Close'),
               onPressed: () {
-                Navigator.of(context).pop(); // 关闭对话框
+                Navigator.of(context).pop(); // Close dialog
               },
             ),
             TextButton(
               child: Text('To Login'),
               onPressed: () {
-                Navigator.of(context).pop(); // 关闭对话框
-                Navigator.of(context).pushNamed('/login'); // 导航到登录页面
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pushNamed('/login'); // Navigate to login
               },
             ),
           ],
@@ -519,32 +519,25 @@ class _InputPageState extends State<InputPage> {
 
   void _showUploadSuccess(BuildContext context) {
     final snackBar = SnackBar(
-      content: Text('折扣已上传'),
+      content: Text('Discount Uploaded'),
       duration: Duration(seconds: 2),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  // void _showUploadFailure(BuildContext context) {
-  //   final snackBar = SnackBar(
-  //     content: Text('上传失败，请重试'),
-  //     duration: Duration(seconds: 2),
-  //   );
-  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  // }
 
-  // 日期选择器函数
+  // endTime picker function
   Future<void> _selectEndDate(BuildContext context, bool isStartTime) async {
-    // 弹出对话框让用户选择使用日期还是“Subject to availability”
+    // A dialog box pops up allowing the user to choose between date of use or "Subject to availability"
     final bool useAvailability = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('选择结束时间'),
-            content: Text('您希望设置一个具体日期还是使用“Subject to availability”？'),
+            title: Text('Choose end time'),
+            content: Text('Do you want to set a specific date or use "Subject to availability"? '),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('具体日期'),
+                child: Text('specific date'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -562,7 +555,7 @@ class _InputPageState extends State<InputPage> {
       return;
     }
 
-    // 如果用户选择具体日期，则展示日期选择器
+    // If the user selects a specific date, show the date picker
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -601,16 +594,16 @@ class _InputPageState extends State<InputPage> {
   void _showInputAlert(String missingInput) {
     showDialog(
       context: context,
-      barrierDismissible: false, // 用户必须点击按钮才能关闭弹窗
+      barrierDismissible: false, // User must click a button to close the pop-up window
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('输入缺失'),
-          content: Text('请输入$missingInput。'),
+          title: Text('Missing input'),
+          content: Text('please enter $missingInput。'),
           actions: <Widget>[
             TextButton(
-              child: Text('确定'),
+              child: Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // 关闭弹窗
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -623,7 +616,7 @@ class _InputPageState extends State<InputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('输入折扣'),
+        title: Text('Enter Discount'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -631,21 +624,21 @@ class _InputPageState extends State<InputPage> {
           children: <Widget>[
             TextField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: '商家名称')),
+                decoration: InputDecoration(labelText: 'Merchant Name')),
             TextField(
                 controller: _productNameController,
-                decoration: InputDecoration(labelText: '商品名称')),
+                decoration: InputDecoration(labelText: 'Product Name')),
             TextField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: '折扣描述')),
+                decoration: InputDecoration(labelText: 'Discount Description')),
             ListTile(
               title: Text(
-                  '开始时间: ${_startTime != null ? DateFormat('yyyy-MM-dd').format(_startTime!) : '未选择'}'),
+                  'Start Time: ${_startTime != null ? DateFormat('yyyy-MM-dd').format(_startTime!) : 'Not selected'}'),
               trailing: Icon(Icons.calendar_today),
               onTap: () => _selectStartDate(context, true),
             ),
             ListTile(
-              title: Text('结束时间: ' +
+              title: Text('End Time: ' +
                   (_endTime is DateTime
                       ? DateFormat('yyyy-MM-dd').format(_endTime)
                       : _endTime)),
@@ -683,13 +676,10 @@ class _InputPageState extends State<InputPage> {
                     height: 50,
                     decoration: BoxDecoration(
                       color: entry.value, // 设置颜色
-                      borderRadius: BorderRadius.circular(10), // 设置圆角的大小
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     padding: EdgeInsets.all(8),
-                    // child: Text(
-                    //   entry.key,
-                    //   style: TextStyle(color: Colors.white),
-                    // ),
+
                   ),
                 );
               }).toList(),
@@ -710,7 +700,7 @@ class _InputPageState extends State<InputPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _uploadDiscount,
-        tooltip: '上传折扣',
+        tooltip: 'Upload Discount',
         child: Icon(Icons.upload),
       ),
     );

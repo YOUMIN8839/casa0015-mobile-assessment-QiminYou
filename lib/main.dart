@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Pages/login_screen.dart';
 import 'Pages/register_screen.dart';
-import 'main_page/calendar_screen.dart';
+import 'main_page/calendar/calendar_screen.dart';
 import 'Pages/input_page/input_page.dart';
 import 'main_page/map_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'main_page/calendar/calendar_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: MainScreen(),
       routes: {
+        '/MainScreen': (context) => MainScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/choicePage': (context) => ChoicePage(),
@@ -86,7 +88,10 @@ class _MainScreenState extends State<MainScreen> {
               title: Text('Logout'),
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
-                setState(() {}); // Update UI
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => MainScreen()),
+                );
+                setState(() {});
               },
             ),
             ListTile(
