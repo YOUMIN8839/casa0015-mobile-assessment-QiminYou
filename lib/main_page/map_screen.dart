@@ -49,9 +49,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
 
-
-
-
   Future<List<dynamic>> callCloudFunction(String keyword,
       LatLng location) async {
     var url = Uri.parse(
@@ -142,7 +139,6 @@ class _MapScreenState extends State<MapScreen> {
     List<LatLng> routeCoords = [];
     polyline.forEach((point) {
       routeCoords.add(LatLng(point.latitude, point.longitude));
-
     });
     return routeCoords;
   }
@@ -235,95 +231,113 @@ class _MapScreenState extends State<MapScreen> {
     return FirebaseFirestore.instance
         .collection('users/$userId/discounts')
         .where('status', isEqualTo: true)
-        .where('endTime', isGreaterThan: now)
         .snapshots()
         .map((snapshot) =>
-        snapshot.docs
-            .map((doc) => doc.data()['merchantName'].toString())
-            .toList());
+        snapshot.docs.where((doc) {
+          var endTime = doc.data()['endTime'];
+          return endTime is DateTime ? endTime.isAfter(now) : endTime ==
+              "Subject to availability";
+        }).map((doc) => doc.data()['merchantName'].toString())
+            .toSet().toList()); // 使用 toSet() 来去重，然后转回 List
   }
+
 
   @override
   Widget build(BuildContext context) {
+    var user = FirebaseAuth.instance.currentUser; // 获取当前用户
+
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1,
-            child: currentLocation == null
-                ? Center(child: CircularProgressIndicator())
-                : GoogleMap(
-              onMapCreated: _onMapCreated,
-              polylines: _polylines,
-              initialCameraPosition: CameraPosition(
-                target: currentLocation!,
-                zoom: 14.0,
-              ),
+      body: user == null ? showNotLoggedInImage() : showLoggedInContent(),
+    );
+  }
+
+  Widget showLoggedInContent() {
+    return Column(
+      children: [
+        Expanded(
+          flex: 1,
+          child: currentLocation == null
+              ? Center(child: CircularProgressIndicator())
+              : GoogleMap(
+            onMapCreated: _onMapCreated,
+            polylines: _polylines,
+            initialCameraPosition: CameraPosition(
+              target: currentLocation!,
+              zoom: 14.0,
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: StreamBuilder<List<String>>(
-              stream: getMerchantNames(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
+        ),
+        Expanded(
+          flex: 1,
+          child: StreamBuilder<List<String>>(
+            stream: getMerchantNames(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text("No active discounts found."));
-                }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text("No active discounts found."));
+              }
 
-                var merchantNames = snapshot.data!;
-                return ListView.builder(
-                  itemCount: merchantNames.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 4.0,
-                      child: ListTile(
-                        title: Text(merchantNames[index]),
-                        trailing: ElevatedButton(
-                          child: Text('Search'),
-                          onPressed: () => searchNearbyPlaces(merchantNames[index]),
-                        ),
+              var merchantNames = snapshot.data!;
+              return ListView.builder(
+                itemCount: merchantNames.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 4.0,
+                    child: ListTile(
+                      title: Text(merchantNames[index]),
+                      trailing: ElevatedButton(
+                        child: Text('Search'),
+                        onPressed: () =>
+                            searchNearbyPlaces(merchantNames[index]),
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
-          Expanded(
-            flex: 1,
-            child: ListView.builder(
-              itemCount: nearbyPlaces.length,
-              itemBuilder: (context, index) {
-                final place = nearbyPlaces[index];
-                return ListTile(
-                  title: Text(place['name']),
-                  subtitle: Text("${place['location']['lat']}, ${place['location']['lng']}"),
-                  trailing: index == 0 ? StreamBuilder<int>(
-                    stream: peopleCountStream(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
-                      return Text(snapshot.hasData ? snapshot.data.toString() : "0");
-                    },
-                  ) : null,
-                  onTap: () {
-                    LatLng destination = LatLng(
-                      place['location']['lat'],
-                      place['location']['lng'],
-                    );
-                    showDirections(destination);
+        ),
+        Expanded(
+          flex: 1,
+          child: ListView.builder(
+            itemCount: nearbyPlaces.length,
+            itemBuilder: (context, index) {
+              final place = nearbyPlaces[index];
+              return ListTile(
+                title: Text(place['name']),
+                subtitle: Text(
+                    "${place['location']['lat']}, ${place['location']['lng']}"),
+                trailing: index == 0 ? StreamBuilder<int>(
+                  stream: peopleCountStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    return Text(
+                        snapshot.hasData ? snapshot.data.toString() : "0");
                   },
-                );
-              },
-            ),
+                ) : null,
+                onTap: () {
+                  LatLng destination = LatLng(
+                    place['location']['lat'],
+                    place['location']['lng'],
+                  );
+                  showDirections(destination);
+                },
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget showNotLoggedInImage() {
+    return Center(
+      child: Image.asset('assets/images/calendar_not_login.png'),
     );
   }
 }

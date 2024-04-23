@@ -32,11 +32,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('注册错误'),
-            content: Text(e.message ?? '未知错误'), // 显示具体的错误信息
+            title: Text('Register Faiure'),
+            content: Text(e.message ?? 'Unknown Failure'), // 显示具体的错误信息
             actions: <Widget>[
               TextButton(
-                child: Text('关闭'),
+                child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop(); // 关闭对话框
                 },

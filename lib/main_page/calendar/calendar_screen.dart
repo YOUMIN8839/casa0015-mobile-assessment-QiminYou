@@ -71,13 +71,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 return Center(child: CircularProgressIndicator());
               }
               List<Discount> allDiscounts = snapshot.data!;
+              DateTime now = DateTime.now();
               List<Discount> activeDiscounts = allDiscounts
-                  .where((discount) =>
-              discount.endTime is DateTime &&
-                  discount.endTime.isAfter(DateTime.now()))
+                  .where((discount) {
+                if (discount.endTime.toString() == "Subject to availability") {
+                  return true; // 保持 “subject to availability” 的折扣始终为活跃状态
+                }
+                if (discount.endTime is DateTime) {
+                  return discount.endTime.isAfter(now); // 检查日期是否未过期
+                }
+                return false; // 默认其他情况为非活跃状态
+              })
                   .toList();
 
-              DateTime now = DateTime.now();
               DateTime startOfCalendar = DateTime(now.year, now.month,
                   now.day - 21); // Start from 21 days before today
               DateTime endOfCalendar = DateTime(now.year, now.month,
@@ -104,7 +110,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         return dayBuilder(context, day, activeDiscounts, true);
                       },
                     ),
-
                   ),
                   SizedBox(height: 20), // Adding a space between the calendar and the next content
                 ],

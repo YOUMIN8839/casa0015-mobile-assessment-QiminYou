@@ -89,14 +89,14 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                       decoration: InputDecoration(labelText: 'Discount Description'),
                     ),
                     ListTile(
-                      title: Text('Start Date: ${startTime != null ? DateFormat('yyyy-MM-dd').format(startTime!) : '未选择'}'),
+                      title: Text('Start Date: ${startTime != null ? DateFormat('yyyy-MM-dd').format(startTime!) : 'Not selected'}'),
                       trailing: Icon(Icons.calendar_today),
-                      onTap: () => _selectStartDate(),
+                      onTap: () => _selectStartDate(setModalState),  // Pass setModalState
                     ),
                     ListTile(
                       title: Text('End Date: ${endTime is DateTime ? DateFormat('yyyy-MM-dd').format(endTime) : endTime.toString()}'),
                       trailing: Icon(Icons.calendar_today),
-                      onTap: () => _selectEndDate(context, false),
+                      onTap: () => _selectEndDate(context, setModalState, false),  // Pass setModalState and context
                     ),
                     DropdownButtonFormField<String>(
                       value: quantity,
@@ -219,7 +219,20 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
       'color': color.value.toRadixString(16),
       'status': status
     }).then((_) {
-      Navigator.pop(context);
+      Navigator.pop(context); // Pop the current detail page or modal
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DiscountDetailPage(
+          discount: Discount(
+              documentId: widget.discount.documentId,  // Assuming an identifier
+              merchantName: nameController.text.trim(),
+              productName: productNameController.text.trim(),
+              description: descriptionController.text.trim(),
+              startTime: startTime ?? DateTime.now(),
+              endTime: endTime,
+              quantity: quantity,
+              color: color,
+              status: status
+          ))));
+
     }).catchError((error) {
 
       showDialog(
@@ -243,8 +256,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   }
 
 
-  void _selectStartDate() async {
-
+  void _selectStartDate(StateSetter setModalState) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startTime ?? DateTime.now(),
@@ -252,19 +264,19 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null && picked != startTime) {
-      setState(() {
+      setModalState(() {  // Use setModalState to update modal state
         startTime = picked;
       });
     }
   }
 
-  Future<void> _selectEndDate(BuildContext context, bool isStartTime) async {
+  Future<void> _selectEndDate(BuildContext context, StateSetter setModalState, bool isStartTime) async {
     // A dialog box pops up allowing the user to choose between date of use or "Subject to availability"
     final bool useAvailability = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Choose end time'),
-        content: Text('Do you want to set a specific date or use "Subject to availability"? '),
+        content: Text('Do you want to set a specific date or use "Subject to availability"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -276,11 +288,10 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           ),
         ],
       ),
-    ) ??
-        false;
+    ) ?? false;
 
     if (useAvailability) {
-      setState(() {
+      setModalState(() {
         endTime = 'Subject to availability';
       });
       return;
@@ -294,7 +305,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      setState(() {
+      setModalState(() {
         if (isStartTime) {
           startTime = picked;
         } else {

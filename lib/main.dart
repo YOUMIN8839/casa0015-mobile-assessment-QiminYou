@@ -6,19 +6,35 @@ import 'main_page/calendar/calendar_screen.dart';
 import 'Pages/input_page/input_page.dart';
 import 'main_page/map_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'main_page/calendar/calendar_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '/Pages/tutorial.dart';
+import '/Pages/feedback_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isFirstLaunch = (prefs.getBool('first_launch') ?? true);
+
+  Widget homeScreen = isFirstLaunch ? TutorialScreen() : MainScreen();
+
+  if (isFirstLaunch) {
+    await prefs.setBool('first_launch', false);
+  }
+
+  runApp(MyApp(homeScreen: homeScreen));
 }
 
 class MyApp extends StatelessWidget {
+  final Widget homeScreen;
+
+  MyApp({required this.homeScreen});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MainScreen(),
+      home: homeScreen,
       routes: {
         '/MainScreen': (context) => MainScreen(),
         '/login': (context) => LoginScreen(),
@@ -26,10 +42,13 @@ class MyApp extends StatelessWidget {
         '/choicePage': (context) => ChoicePage(),
         '/calendar': (context) => CalendarScreen(),
         '/map': (context) => MapScreen(),
+
       },
     );
   }
 }
+
+
 
 class MainScreen extends StatefulWidget {
   @override
@@ -99,6 +118,16 @@ class _MainScreenState extends State<MainScreen> {
               title: Text('Account Details'),
               onTap: () {
                 // Navigate to account details or similar
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.feedback),
+              title: Text('Feedback'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                );
               },
             ),
           ],

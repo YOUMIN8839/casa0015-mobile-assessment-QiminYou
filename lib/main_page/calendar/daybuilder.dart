@@ -12,21 +12,27 @@ Widget dayBuilder(BuildContext context, DateTime day, List<Discount> activeDisco
     )
   ];
 
-  // Check each discount for active status and appropriate date range
   for (var discount in activeDiscounts) {
     bool isActiveOnDay = false;
-    // Determine if the discount is within the date range or if it's set to "subject to availability"
+    DateTime now = DateTime.now();
+
+    // If the discount's endTime is a DateTime type, handle according to original logic
     if (discount.endTime is DateTime) {
       isActiveOnDay = day.isAfter(discount.startTime.subtract(const Duration(days: 1))) &&
           day.isBefore(discount.endTime.add(const Duration(days: 1)));
-    } else if (discount.endTime.toString() == "Subject to availability") {
+    }
+    // If the discount's endTime is "subject to availability", set the activity period to end at today's end
+    else if (discount.endTime.toString() == "Subject to availability") {
+      // Use 23:59:59 of the current day as the end time
+      DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
       isActiveOnDay = day.isAfter(discount.startTime.subtract(const Duration(days: 1))) &&
-          day.isBefore(DateTime.now().add(const Duration(days: 1)));
+          day.isBefore(endOfDay);
     }
 
+    // If the discount is active and applicable for the day, add a color bar
     if (discount.status && isActiveOnDay) {
       children.add(Positioned(
-        bottom: (20 * children.length).toDouble(), // Stagger the color bars
+        bottom: (20 * children.length).toDouble(),
         left: 0,
         right: 0,
         child: Container(
@@ -43,3 +49,6 @@ Widget dayBuilder(BuildContext context, DateTime day, List<Discount> activeDisco
     child: Stack(children: children),
   );
 }
+
+
+
