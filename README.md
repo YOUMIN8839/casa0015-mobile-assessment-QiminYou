@@ -12,6 +12,8 @@ It has two main fuctions:
 1. Use a calendar view as user's discount dashboard. Record the discounts by OCR and hand input.
 2. Give user guidance on how to get to the discountig store, and offer some information about the store.
 
+#/sonic/ contains codes on arduino uno wifi r4. It connects to two HC-SR04 sensors. Through the difference in the order they receive valid data, a people counting function is primarily established. 
+
 ## screenshots:
 ##OCR:
 ![111.png](https://github.com/YOUMIN8839/casa0015-mobile-assessment-QiminYou/blob/main/readme/111.png)
