@@ -41,6 +41,16 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.9.2
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"  # 你的图标文件路径
+    #adaptive_icon_background: "#FFFFFF"   # 仅Android需要，用于适配性图标的背景颜色
+    #adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"  # 仅Android需要，适配性图标前景图
+
+
+
   flutter_test:
     sdk: flutter
 
@@ -50,6 +60,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -63,6 +74,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/icon/app_icon.png
+    #- assets/icon/app_icon_foreground.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

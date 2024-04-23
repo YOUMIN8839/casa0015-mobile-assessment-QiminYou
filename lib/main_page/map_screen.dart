@@ -31,6 +31,27 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  Stream<int> peopleCountStream() {
+    return FirebaseFirestore.instance
+        .collection('merchants')
+        .doc('Tesco')
+        .snapshots()
+        .map((snapshot) {
+      var people = snapshot.data()?['people']; // Access 'people' safely
+      if (people is int) {
+        return people; // Directly return if already an int
+      } else if (people is String) {
+        return int.tryParse(people) ?? 0; // Try parsing if it's a string
+      } else {
+        return 0; // Return 0 if it's neither int nor String
+      }
+    });
+  }
+
+
+
+
+
   Future<List<dynamic>> callCloudFunction(String keyword,
       LatLng location) async {
     var url = Uri.parse(
@@ -258,13 +279,12 @@ class _MapScreenState extends State<MapScreen> {
                   itemCount: merchantNames.length,
                   itemBuilder: (context, index) {
                     return Card(
-                      elevation: 4.0, // 添加立体效果
+                      elevation: 4.0,
                       child: ListTile(
                         title: Text(merchantNames[index]),
                         trailing: ElevatedButton(
                           child: Text('Search'),
-                          onPressed: () =>
-                              searchNearbyPlaces(merchantNames[index]),
+                          onPressed: () => searchNearbyPlaces(merchantNames[index]),
                         ),
                       ),
                     );
@@ -276,22 +296,26 @@ class _MapScreenState extends State<MapScreen> {
           Expanded(
             flex: 1,
             child: ListView.builder(
-              itemCount: nearbyPlaces.length, // Use nearbyPlaces for item count
+              itemCount: nearbyPlaces.length,
               itemBuilder: (context, index) {
-                // Get the place data for the current index
-                final place = nearbyPlaces[index]; // Ensure this place data exists in your state
-
+                final place = nearbyPlaces[index];
                 return ListTile(
                   title: Text(place['name']),
-                  subtitle: Text(
-                      "${place['location']['lat']}, ${place['location']['lng']}"),
+                  subtitle: Text("${place['location']['lat']}, ${place['location']['lng']}"),
+                  trailing: index == 0 ? StreamBuilder<int>(
+                    stream: peopleCountStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+                      return Text(snapshot.hasData ? snapshot.data.toString() : "0");
+                    },
+                  ) : null,
                   onTap: () {
-                    // Extract the LatLng from the place data
                     LatLng destination = LatLng(
                       place['location']['lat'],
                       place['location']['lng'],
                     );
-                    // Call showDirections with the destination LatLng
                     showDirections(destination);
                   },
                 );
@@ -302,5 +326,4 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
-
 }
